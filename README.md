@@ -55,3 +55,55 @@ kpop_collection/
 └── console_app/
     └── console_app.py         # Interactive console front end
 ```
+
+Business Layer + REST Service Layer
+Architecture
+Console Client (HTTP)
+    ↓ requests
+Flask Service Layer  (service/app.py)       ← REST API, /api/v1/
+    ↓ method calls
+Business Layer       (business/*.py)        ← validation, rules, dict conversion
+    ↓ DAO calls
+Data Access Layer    (kpop_dal.py)          ← sqlite3 CRUD
+    ↓ SQL
+SQLite Database      (kpop_collection.db)
+Quick Start
+bashpip install -r requirements.txt
+
+# First time only — create and seed the database
+python init_db.py
+
+# Start the API server (Terminal 1)
+python service/app.py
+# API available at http://127.0.0.1:5000
+
+# Run the console client (Terminal 2)
+python client/console_client.py          # interactive menu
+python client/console_client.py --demo   # automated CRUD demo
+API Endpoints (35 total)
+
+GET  /health
+GET/POST      /api/v1/artists
+GET/PUT/DELETE /api/v1/artists/{id}
+PATCH          /api/v1/artists/{id}/deactivate
+GET/POST       /api/v1/groups
+GET             /api/v1/groups/{id}/members
+GET/POST        /api/v1/albums
+GET/POST        /api/v1/collection
+GET             /api/v1/collection/spent
+GET/POST        /api/v1/photocards
+GET             /api/v1/photocards/value
+PATCH           /api/v1/photocards/{id}/toggle-trade
+GET/POST        /api/v1/wishlist
+PATCH           /api/v1/wishlist/{id}/acquire
+GET             /api/v1/reports/summary
+GET             /api/v1/reports/photocards-per-artist
+GET             /api/v1/reports/albums-per-group
+
+Cloud Deployment (Render.com)
+
+Push to GitHub
+New Web Service → connect repo
+Build command: pip install flask gunicorn
+Start command: gunicorn service.app:app --bind 0.0.0.0:$PORT
+Env var: DB_PATH=/opt/render/project/src/kpop_collection.db
