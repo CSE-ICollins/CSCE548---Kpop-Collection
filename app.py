@@ -57,7 +57,8 @@ import logging
 from functools import wraps
 
 # ── path setup so we can import from the project root ────────────────────────
-_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_ROOT     = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_FRONTEND = os.path.join(_ROOT, "frontend")
 sys.path.insert(0, _ROOT)
 
 # Point the DAL at the right DB file (can be overridden by env var)
@@ -101,7 +102,27 @@ _report_biz  = ReportBusiness()
 # ── Flask factory ─────────────────────────────────────────────────────────────
 
 def create_app() -> Flask:
-    app = Flask(__name__)
+    # Serve the frontend/index.html from the project root
+    app = Flask(__name__,
+                static_folder=_FRONTEND,
+                static_url_path="/static/frontend")
+
+    # ── CORS — allow any origin so the HTML frontend can call the API ─────────
+    @app.after_request
+    def add_cors(response):
+        response.headers["Access-Control-Allow-Origin"]  = "*"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+        return response
+
+    @app.route("/api/v1/<path:ignored>", methods=["OPTIONS"])
+    def options_handler(ignored=None):
+        from flask import make_response
+        r = make_response("", 204)
+        r.headers["Access-Control-Allow-Origin"]  = "*"
+        r.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+        r.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+        return r
 
     # ── error helpers ─────────────────────────────────────────────────────────
 
@@ -552,6 +573,32 @@ def create_app() -> Flask:
     @app.route("/health", methods=["GET"])
     def health():
         return ok({"status": "ok", "service": "kpop-collection-api", "version": "1.0"})
+
+    # ── Serve the web frontend ─────────────────────────────────────────────────
+    @app.route("/")
+    def index():
+        """Serve the single-page web frontend (frontend/index.html)."""
+        from flask import send_from_directory
+        return send_from_directory(_FRONTEND, "index.html")
+
+    @app.route("/app")
+    def frontend_app():
+        """Alias for the frontend — useful when sharing link."""
+        from flask import send_from_directory
+        return send_from_directory(_FRONTEND, "index.html")
+
+    # ── CORS — allow browser requests from same origin or localhost dev ────────
+    @app.after_request
+    def add_cors(response):
+        response.headers["Access-Control-Allow-Origin"]  = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+        return response
+
+    @app.route("/api/v1/<path:p>", methods=["OPTIONS"])
+    def api_options_handler(p):
+        """Handle CORS preflight requests."""
+        return "", 204
 
     logger.info("K-Pop Collection API initialized. DB: %s", _db_path)
     return app

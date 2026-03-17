@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 KPOP VAULT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0f; --surface:#111118; --surface2:#1a1a26; --border:#2a2a3a; --border2:#3a3a50;
+  --text:#f0eef8; --muted:#8884a8; --pink:#ff2d78; --pink2:#ff6fa8; --cyan:#00e5ff;
+  --gold:#ffd166; --green:#06d6a0; --red:#ef476f; --purple:#b388ff;
+  --font-display:'Bebas Neue',sans-serif; --font-body:'DM Sans',sans-serif;
+  --font-mono:'DM Mono',monospace; --radius:6px; --radius-lg:12px;
+  --glow-pink:0 0 20px rgba(255,45,120,0.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.5;min-height:100vh}
+.app-shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:60px 1fr;height:100vh}
+header{grid-column:1/-1;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:relative;overflow:hidden}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--purple))}
+.logo{font-family:var(--font-display);font-size:28px;letter-spacing:3px;background:linear-gradient(135deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.logo-sub{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted)}
+.header-spacer{flex:1}
+#api-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:all .3s}
+.status-dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}
+.status-dot.err{background:var(--red);box-shadow:0 0 8px var(--red)}
+nav{background:var(--surface);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto}
+.nav-section{padding:8px 16px 4px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:500}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--muted);border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:rgba(255,45,120,.05)}
+.nav-item.active{color:var(--pink);background:rgba(255,45,120,.08);border-left-color:var(--pink)}
+.nav-icon{font-size:15px;width:20px;text-align:center}
+.nav-count{margin-left:auto;font-size:10px;font-family:var(--font-mono);background:var(--surface2);color:var(--muted);padding:1px 6px;border-radius:10px;border:1px solid var(--border)}
+main{overflow-y:auto;background:var(--bg)}
+.page{display:none;padding:28px 32px}
+.page.active{display:block}
+.page-header{display:flex;align-items:flex-end;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.page-title{font-family:var(--font-display);font-size:42px;letter-spacing:2px;line-height:1}
+.page-subtitle{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.page-header-actions{margin-left:auto;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:12px;font-family:var(--font-body);font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.5px}
+.btn-primary{background:var(--pink);color:white;border-color:var(--pink)}
+.btn-primary:hover{background:var(--pink2);box-shadow:var(--glow-pink)}
+.btn-secondary{background:transparent;color:var(--text);border-color:var(--border2)}
+.btn-secondary:hover{border-color:var(--pink);color:var(--pink)}
+.btn-ghost{background:transparent;color:var(--muted);border-color:transparent;padding:6px 10px}
+.btn-ghost:hover{color:var(--text);background:var(--surface2)}
+.btn-danger{background:transparent;color:var(--red);border-color:var(--red)}
+.btn-danger:hover{background:var(--red);color:white}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-icon{padding:6px 8px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.pink::before{background:var(--pink)}.stat-card.cyan::before{background:var(--cyan)}
+.stat-card.gold::before{background:var(--gold)}.stat-card.green::before{background:var(--green)}
+.stat-card.purple::before{background:var(--purple)}
+.stat-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stat-value{font-family:var(--font-display);font-size:32px;letter-spacing:1px;line-height:1}
+.stat-card.pink .stat-value{color:var(--pink)}.stat-card.cyan .stat-value{color:var(--cyan)}
+.stat-card.gold .stat-value{color:var(--gold)}.stat-card.green .stat-value{color:var(--green)}
+.stat-card.purple .stat-value{color:var(--purple)}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:7px 12px;flex:1;min-width:200px;max-width:320px;transition:border-color .15s}
+.search-box:focus-within{border-color:var(--pink)}
+.search-box input{background:none;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:13px;width:100%}
+.search-box input::placeholder{color:var(--muted)}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:7px 10px;font-size:12px;font-family:var(--font-body);cursor:pointer;outline:none}
+.filter-select:focus{border-color:var(--pink)}
+.filter-select option{background:var(--surface2)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .1s}
+tbody tr:hover{background:rgba(255,45,120,.04)}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;border:1px solid}
+.badge-pink{color:var(--pink);border-color:rgba(255,45,120,.3);background:rgba(255,45,120,.08)}
+.badge-cyan{color:var(--cyan);border-color:rgba(0,229,255,.3);background:rgba(0,229,255,.08)}
+.badge-gold{color:var(--gold);border-color:rgba(255,209,102,.3);background:rgba(255,209,102,.08)}
+.badge-green{color:var(--green);border-color:rgba(6,214,160,.3);background:rgba(6,214,160,.08)}
+.badge-red{color:var(--red);border-color:rgba(239,71,111,.3);background:rgba(239,71,111,.08)}
+.badge-purple{color:var(--purple);border-color:rgba(179,136,255,.3);background:rgba(179,136,255,.08)}
+.badge-muted{color:var(--muted);border-color:var(--border);background:var(--surface2)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.6),var(--glow-pink);animation:modal-in .2s ease}
+@keyframes modal-in{from{transform:translateY(16px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.modal-header{display:flex;align-items:center;padding:20px 24px 16px;border-bottom:1px solid var(--border);gap:12px}
+.modal-title{font-family:var(--font-display);font-size:22px;letter-spacing:1px;flex:1}
+.modal-body{padding:20px 24px}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid var(--border)}
+.form-group{margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-label{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:500}
+.form-control{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:9px 12px;font-size:13px;font-family:var(--font-body);outline:none;transition:border-color .15s}
+.form-control:focus{border-color:var(--pink)}
+.form-control::placeholder{color:var(--muted)}
+select.form-control option{background:var(--surface2)}
+textarea.form-control{resize:vertical;min-height:72px}
+.toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:2000}
+.toast{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 16px;font-size:13px;min-width:260px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:toast-in .25s ease}
+@keyframes toast-in{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
+.toast.success{border-left:3px solid var(--green)}.toast.error{border-left:3px solid var(--red)}.toast.info{border-left:3px solid var(--cyan)}
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted)}
+.empty-state .empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;gap:12px;color:var(--muted)}
+.spinner{width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--pink);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.chart-card-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.bar-item{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-label{font-size:12px;min-width:90px;color:var(--text)}
+.bar-track{flex:1;background:var(--surface2);border-radius:3px;height:8px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width .6s ease;background:linear-gradient(90deg,var(--pink),var(--cyan))}
+.bar-val{font-size:11px;font-family:var(--font-mono);color:var(--muted);min-width:36px;text-align:right}
+.action-cell{display:flex;gap:4px;align-items:center}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<header>
+  <div><div class="logo">KPOP VAULT</div><div class="logo-sub">Collection Manager</div></div>
+  <div class="header-spacer"></div>
+  <div id="api-status"><div class="status-dot" id="status-dot"></div><span id="status-text">Connecting…</span></div>
+</header>
+<nav id="nav">
+  <div class="nav-section">Overview</div>
+  <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</div>
+  <div class="nav-section" style="margin-top:12px">Catalog</div>
+  <div class="nav-item" onclick="showPage('groups',this)"><span class="nav-icon">👥</span>Groups<span class="nav-count" id="cnt-groups">…</span></div>
+  <div class="nav-item" onclick="showPage('artists',this)"><span class="nav-icon">🎤</span>Artists<span class="nav-count" id="cnt-artists">…</span></div>
+  <div class="nav-item" onclick="showPage('albums',this)"><span class="nav-icon">💿</span>Albums<span class="nav-count" id="cnt-albums">…</span></div>
+  <div class="nav-section" style="margin-top:12px">My Collection</div>
+  <div class="nav-item" onclick="showPage('collection',this)"><span class="nav-icon">📦</span>Owned Albums<span class="nav-count" id="cnt-collection">…</span></div>
+  <div class="nav-item" onclick="showPage('photocards',this)"><span class="nav-icon">🃏</span>Photocards<span class="nav-count" id="cnt-photocards">…</span></div>
+  <div class="nav-item" onclick="showPage('wishlist',this)"><span class="nav-icon">⭐</span>Wishlist<span class="nav-count" id="cnt-wishlist">…</span></div>
+</nav>
+<main id="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="page-header"><div><div class="page-subtitle">Overview</div><div class="page-title">DASHBOARD</div></div></div>
+  <div class="stats-grid" id="dash-stats"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="chart-row" id="dash-charts"></div>
+</div>
+
+<!-- GROUPS -->
+<div id="page-groups" class="page">
+  <div class="page-header"><div><div class="page-subtitle">Catalog</div><div class="page-title">GROUPS</div></div>
+  <div class="page-header-actions"><button class="btn btn-primary" onclick="openGroupModal()">+ Add Group</button></div></div>
+  <div class="toolbar">
+    <div class="search-box"><span>🔍</span><input id="search-groups" placeholder="Filter groups…" oninput="filterRows('groups-tbody',this.value,[0,1])"></div>
+    <select class="filter-select" id="filter-group-type" onchange="loadGroups()">
+      <option value="">All Types</option><option>Boy Group</option><option>Girl Group</option><option>Co-ed</option><option>Solo</option>
+    </select>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Group</th><th>Agency</th><th>Debut</th><th>Fandom</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="groups-tbody"><tr><td colspan="7"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+  </table></div>
+</div>
+
+<!-- ARTISTS -->
+<div id="page-artists" class="page">
+  <div class="page-header"><div><div class="page-subtitle">Catalog</div><div class="page-title">ARTISTS</div></div>
+  <div class="page-header-actions"><button class="btn btn-primary" onclick="openArtistModal()">+ Add Artist</button></div></div>
+  <div class="toolbar">
+    <div class="search-box"><span>🔍</span><input id="search-artists" placeholder="Search by name…" oninput="searchArtists(this.value)"></div>
+    <select class="filter-select" id="filter-artist-gender" onchange="loadArtists()">
+      <option value="">All Genders</option><option>Male</option><option>Female</option><option>Non-binary</option>
+    </select>
+    <select class="filter-select" id="filter-artist-active" onchange="loadArtists()">
+      <option value="">All Status</option><option value="1">Active</option><option value="0">Inactive</option>
+    </select>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Stage Name</th><th>Real Name</th><th>Nationality</th><th>Gender</th><th>Debut</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="artists-tbody"><tr><td colspan="7"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+  </table></div>
+</div>
+
+<!-- ALBUMS -->
+<div id="page-albums" class="page">
+  <div class="page-header"><div><div class="page-subtitle">Catalog</div><div class="page-title">ALBUMS</div></div>
+  <div class="page-header-actions"><button class="btn btn-primary" onclick="openAlbumModal()">+ Add Album</button></div></div>
+  <div class="toolbar">
+    <div class="search-box"><span>🔍</span><input id="search-albums" placeholder="Filter albums…" oninput="filterRows('albums-tbody',this.value,[0,1,2])"></div>
+    <select class="filter-select" id="filter-album-group" onchange="loadAlbums()"><option value="">All Groups</option></select>
+    <select class="filter-select" id="filter-album-type" onchange="loadAlbums()">
+      <option value="">All Types</option><option>Mini Album</option><option>Full Album</option><option>Single Album</option>
+      <option>Repackage</option><option>Special Album</option><option>OST</option><option>Collaboration</option>
+    </select>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Group</th><th>Title</th><th>Type</th><th>Version</th><th>Released</th><th>Tracks</th><th>Actions</th></tr></thead>
+    <tbody id="albums-tbody"><tr><td colspan="7"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+  </table></div>
+</div>
+
+<!-- COLLECTION -->
+<div id="page-collection" class="page">
+  <div class="page-header"><div><div class="page-subtitle">My Collection</div><div class="page-title">OWNED ALBUMS</div></div>
+  <div class="page-header-actions">
+    <button class="btn btn-secondary" onclick="loadTotalSpent()">💰 Total Spent</button>
+    <button class="btn btn-primary" onclick="openCollectionModal()">+ Add Copy</button>
+  </div></div>
+  <div class="toolbar">
+    <div class="search-box"><span>🔍</span><input id="search-collection" placeholder="Filter collection…" oninput="filterRows('collection-tbody',this.value,[0,1])"></div>
+    <select class="filter-select" id="filter-coll-cond" onchange="loadCollection()">
+      <option value="">All Conditions</option><option>Mint</option><option>Near Mint</option><option>Very Good</option><option>Good</option><option>Fair</option><option>Poor</option>
+    </select>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Group</th><th>Album</th><th>Version</th><th>Condition</th><th>Price</th><th>From</th><th>Sealed</th><th>Actions</th></tr></thead>
+    <tbody id="collection-tbody"><tr><td colspan="8"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+  </table></div>
+</div>
+
+<!-- PHOTOCARDS -->
+<div id="page-photocards" class="page">
+  <div class="page-header"><div><div class="page-subtitle">My Collection</div><div class="page-title">PHOTOCARDS</div></div>
+  <div class="page-header-actions">
+    <button class="btn btn-secondary" onclick="loadPcValue()">💎 Total Value</button>
+    <button class="btn btn-primary" onclick="openPhotocardModal()">+ Add Card</button>
+  </div></div>
+  <div class="toolbar">
+    <div class="search-box"><span>🔍</span><input id="search-photocards" placeholder="Filter photocards…" oninput="filterRows('photocards-tbody',this.value,[0,1])"></div>
+    <select class="filter-select" id="filter-pc-trade" onchange="loadPhotocards()"><option value="">All Cards</option><option value="trade">For Trade</option></select>
+    <select class="filter-select" id="filter-pc-artist" onchange="loadPhotocards()"><option value="">All Artists</option></select>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Artist</th><th>Album</th><th>Type</th><th>Condition</th><th>Value</th><th>Trade</th><th>Actions</th></tr></thead>
+    <tbody id="photocards-tbody"><tr><td colspan="7"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+  </table></div>
+</div>
+
+<!-- WISHLIST -->
+<div id="page-wishlist" class="page">
+  <div class="page-header"><div><div class="page-subtitle">My Collection</div><div class="page-title">WISHLIST</div></div>
+  <div class="page-header-actions"><button class="btn btn-primary" onclick="openWishModal()">+ Add Wish</button></div></div>
+  <div class="toolbar">
+    <div class="search-box"><span>🔍</span><input id="search-wishlist" placeholder="Filter wishlist…" oninput="filterRows('wishlist-tbody',this.value,[0,1])"></div>
+    <select class="filter-select" id="filter-wish-pending" onchange="loadWishlist()"><option value="">All Items</option><option value="pending">Pending Only</option></select>
+    <select class="filter-select" id="filter-wish-type" onchange="loadWishlist()"><option value="">All Types</option><option>Album</option><option>Photocard</option><option>Merch</option></select>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Type</th><th>Description</th><th>Budget</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="wishlist-tbody"><tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+  </table></div>
+</div>
+
+</main>
+
+<!-- GROUP MODAL -->
+<div class="modal-overlay" id="modal-group">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-group-title">ADD GROUP</div><button class="btn btn-ghost btn-icon" onclick="closeModal('modal-group')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="group-id">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Group Name *</label><input class="form-control" id="group-name" placeholder="e.g. aespa"></div>
+        <div class="form-group"><label class="form-label">Agency</label><input class="form-control" id="group-agency" placeholder="e.g. SM Entertainment"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Debut Date</label><input class="form-control" id="group-debut" type="date"></div>
+        <div class="form-group"><label class="form-label">Fandom Name</label><input class="form-control" id="group-fandom" placeholder="e.g. MY"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Type</label>
+          <select class="form-control" id="group-type"><option value="">Select…</option><option>Boy Group</option><option>Girl Group</option><option>Co-ed</option><option>Solo</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Active</label>
+          <select class="form-control" id="group-active"><option value="1">Active</option><option value="0">Inactive</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-group')">Cancel</button><button class="btn btn-primary" onclick="saveGroup()">Save Group</button></div>
+  </div>
+</div>
+
+<!-- ARTIST MODAL -->
+<div class="modal-overlay" id="modal-artist">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-artist-title">ADD ARTIST</div><button class="btn btn-ghost btn-icon" onclick="closeModal('modal-artist')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="artist-id">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Stage Name *</label><input class="form-control" id="artist-stage" placeholder="e.g. Karina"></div>
+        <div class="form-group"><label class="form-label">Real Name</label><input class="form-control" id="artist-real" placeholder="e.g. Yoo Ji-min"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nationality</label><input class="form-control" id="artist-nat" value="South Korean"></div>
+        <div class="form-group"><label class="form-label">Gender</label>
+          <select class="form-control" id="artist-gender"><option value="">Select…</option><option>Male</option><option>Female</option><option>Non-binary</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Birthdate</label><input class="form-control" id="artist-dob" type="date"></div>
+        <div class="form-group"><label class="form-label">Debut Year</label><input class="form-control" id="artist-debut" type="number" placeholder="e.g. 2020"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" id="artist-notes" placeholder="Optional notes…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-artist')">Cancel</button><button class="btn btn-primary" onclick="saveArtist()">Save Artist</button></div>
+  </div>
+</div>
+
+<!-- ALBUM MODAL -->
+<div class="modal-overlay" id="modal-album">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-album-title">ADD ALBUM</div><button class="btn btn-ghost btn-icon" onclick="closeModal('modal-album')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="album-id">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Group *</label><select class="form-control" id="album-group"></select></div>
+        <div class="form-group"><label class="form-label">Album Type *</label>
+          <select class="form-control" id="album-type">
+            <option>Mini Album</option><option>Full Album</option><option>Single Album</option><option>Repackage</option><option>Special Album</option><option>OST</option><option>Collaboration</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Title *</label><input class="form-control" id="album-title" placeholder="e.g. SAVAGE"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Version Name</label><input class="form-control" id="album-version" placeholder="e.g. Drama Version"></div>
+        <div class="form-group"><label class="form-label">Release Date</label><input class="form-control" id="album-release" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Tracks</label><input class="form-control" id="album-tracks" type="number" placeholder="e.g. 6"></div>
+        <div class="form-group"><label class="form-label">Label</label><input class="form-control" id="album-label" placeholder="e.g. SM Entertainment"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Limited Edition?</label>
+        <select class="form-control" id="album-limited"><option value="0">No</option><option value="1">Yes — Limited</option></select>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-album')">Cancel</button><button class="btn btn-primary" onclick="saveAlbum()">Save Album</button></div>
+  </div>
+</div>
+
+<!-- COLLECTION MODAL -->
+<div class="modal-overlay" id="modal-collection">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-collection-title">ADD TO COLLECTION</div><button class="btn btn-ghost btn-icon" onclick="closeModal('modal-collection')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="coll-id">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Album *</label><select class="form-control" id="coll-album"></select></div>
+        <div class="form-group"><label class="form-label">Condition</label>
+          <select class="form-control" id="coll-cond"><option>Mint</option><option>Near Mint</option><option>Very Good</option><option>Good</option><option>Fair</option><option>Poor</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Purchase Date</label><input class="form-control" id="coll-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Purchase Price ($)</label><input class="form-control" id="coll-price" type="number" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Purchased From</label><input class="form-control" id="coll-from" placeholder="e.g. Weverse Shop"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Sealed?</label><select class="form-control" id="coll-sealed"><option value="0">No</option><option value="1">Yes</option></select></div>
+        <div class="form-group"><label class="form-label">Has Poster?</label><select class="form-control" id="coll-poster"><option value="0">No</option><option value="1">Yes</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Inclusions</label><input class="form-control" id="coll-inclusions" placeholder="e.g. Photocard, Mini Book, Sticker"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-collection')">Cancel</button><button class="btn btn-primary" onclick="saveCollection()">Save</button></div>
+  </div>
+</div>
+
+<!-- PHOTOCARD MODAL -->
+<div class="modal-overlay" id="modal-photocard">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-pc-title">ADD PHOTOCARD</div><button class="btn btn-ghost btn-icon" onclick="closeModal('modal-photocard')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="pc-id">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Artist *</label><select class="form-control" id="pc-artist"></select></div>
+        <div class="form-group"><label class="form-label">Album *</label><select class="form-control" id="pc-album"></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Collection Item ID *</label><input class="form-control" id="pc-item" type="number" placeholder="Item ID from collection"></div>
+        <div class="form-group"><label class="form-label">Card Type</label>
+          <select class="form-control" id="pc-type"><option>Standard</option><option>Unit</option><option>Solo</option><option>Special</option><option>Lucky Draw</option><option>POB</option><option>Pre-order</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Condition</label>
+          <select class="form-control" id="pc-cond"><option>Mint</option><option>Near Mint</option><option>Very Good</option><option>Good</option><option>Fair</option><option>Poor</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Estimated Value ($)</label><input class="form-control" id="pc-value" type="number" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Acquired Date</label><input class="form-control" id="pc-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Acquired From</label><input class="form-control" id="pc-from" placeholder="e.g. Pulled from album"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">For Trade?</label><select class="form-control" id="pc-trade"><option value="0">No</option><option value="1">Yes</option></select></div>
+        <div class="form-group"><label class="form-label">Duplicate?</label><select class="form-control" id="pc-dup"><option value="0">No</option><option value="1">Yes</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-photocard')">Cancel</button><button class="btn btn-primary" onclick="savePhotocard()">Save Card</button></div>
+  </div>
+</div>
+
+<!-- WISHLIST MODAL -->
+<div class="modal-overlay" id="modal-wish">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-wish-title">ADD TO WISHLIST</div><button class="btn btn-ghost btn-icon" onclick="closeModal('modal-wish')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="wish-id">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Item Type *</label>
+          <select class="form-control" id="wish-type"><option>Album</option><option>Photocard</option><option>Merch</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Priority (1=high)</label>
+          <select class="form-control" id="wish-priority">
+            <option value="1">1 — Must Have</option><option value="2">2 — High</option><option value="3" selected>3 — Medium</option><option value="4">4 — Low</option><option value="5">5 — Nice to Have</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Description *</label><input class="form-control" id="wish-desc" placeholder="What are you looking for?"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Max Budget ($)</label><input class="form-control" id="wish-budget" type="number" step="0.01" placeholder="0.00"></div>
+        <div class="form-group"><label class="form-label">Acquired?</label>
+          <select class="form-control" id="wish-acquired"><option value="0">No — Pending</option><option value="1">Yes — Got it!</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" id="wish-notes" placeholder="Optional notes…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-wish')">Cancel</button><button class="btn btn-primary" onclick="saveWish()">Save Wish</button></div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header"><div class="modal-title">CONFIRM DELETE</div></div>
+    <div class="modal-body"><p id="confirm-msg" style="color:var(--muted);line-height:1.6">Are you sure? This cannot be undone.</p></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-confirm')">Cancel</button><button class="btn btn-danger" id="confirm-btn">Delete</button></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+const API='http://127.0.0.1:5000/api/v1';
+const $=id=>document.getElementById(id);
+const val=id=>$(id)?.value?.trim()??'';
+const setVal=(id,v)=>{if($(id))$(id).value=v??''};
+const intOrNull=v=>v!==''&&v!=null?parseInt(v):null;
+const floatOrNull=v=>v!==''&&v!=null?parseFloat(v):null;
+const dateOrNull=v=>v||null;
+const esc=s=>String(s).replace(/'/g,"\\'");
+
+function toast(msg,type='info'){
+  const icons={success:'✔',error:'✖',info:'ℹ'};
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  $('toasts').appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+async function api(method,path,body=null){
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(body)opts.body=JSON.stringify(body);
+  try{
+    const r=await fetch(API+path,opts);
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||`HTTP ${r.status}`);
+    return data;
+  }catch(e){toast(e.message,'error');throw e;}
+}
+
+function tbody(id,html){
+  const el=$(id);
+  if(el)el.innerHTML=html||`<tr><td colspan="99"><div class="empty-state"><div class="empty-icon">📭</div><p>No records found</p></div></td></tr>`;
+}
+
+function filterRows(tbodyId,search,cols){
+  document.querySelectorAll(`#${tbodyId} tr`).forEach(row=>{
+    const cells=row.querySelectorAll('td');
+    const q=search.toLowerCase();
+    row.style.display=(!q||cols.some(i=>cells[i]?.textContent.toLowerCase().includes(q)))?'':'none';
+  });
+}
+
+function closeModal(id){$(id).classList.remove('open')}
+function openModal(id){$(id).classList.add('open')}
+
+function confirmDelete(msg,fn){
+  $('confirm-msg').textContent=msg;
+  $('confirm-btn').onclick=()=>{closeModal('modal-confirm');fn();};
+  openModal('modal-confirm');
+}
+
+function showPage(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  $(`page-${name}`).classList.add('active');
+  if(el)el.classList.add('active');
+  const loaders={groups:loadGroups,artists:loadArtists,albums:loadAlbums,
+    collection:loadCollection,photocards:loadPhotocards,wishlist:loadWishlist};
+  if(loaders[name])loaders[name]();
+}
+
+async function checkHealth(){
+  try{
+    const r=await fetch('http://127.0.0.1:5000/health');
+    const d=await r.json();
+    if(d.status==='ok'){$('status-dot').className='status-dot ok';$('status-text').textContent='API Online';}
+  }catch{
+    $('status-dot').className='status-dot err';$('status-text').textContent='API Offline';
+    toast('Cannot reach API. Run: python service/app.py','error');
+  }
+}
+
+/* DASHBOARD */
+async function loadDashboard(){
+  try{
+    const [summary,pca,apg]=await Promise.all([api('GET','/reports/summary'),api('GET','/reports/photocards-per-artist'),api('GET','/reports/albums-per-group')]);
+    $('dash-stats').innerHTML=`
+      <div class="stat-card pink"><div class="stat-label">Albums Owned</div><div class="stat-value">${summary.total_albums}</div></div>
+      <div class="stat-card gold"><div class="stat-label">Total Spent</div><div class="stat-value">$${summary.total_spent.toFixed(0)}</div></div>
+      <div class="stat-card cyan"><div class="stat-label">Photocards</div><div class="stat-value">${summary.total_photocards}</div></div>
+      <div class="stat-card green"><div class="stat-label">Card Value</div><div class="stat-value">$${summary.photocard_value.toFixed(0)}</div></div>
+      <div class="stat-card purple"><div class="stat-label">Wishlist</div><div class="stat-value">${summary.wishlist_pending}</div></div>
+      <div class="stat-card cyan"><div class="stat-label">Net Value</div><div class="stat-value">$${summary.net_collection_value.toFixed(0)}</div></div>
+    `;
+    const mx1=Math.max(...pca.map(x=>x.card_count),1);
+    const mx2=Math.max(...apg.map(x=>x.owned_copies),1);
+    $('dash-charts').innerHTML=`
+      <div class="chart-card">
+        <div class="chart-card-title">Photocards by Artist</div>
+        ${pca.slice(0,8).map(r=>`<div class="bar-item"><div class="bar-label">${r.stage_name}</div><div class="bar-track"><div class="bar-fill" style="width:${(r.card_count/mx1)*100}%"></div></div><div class="bar-val">${r.card_count}</div></div>`).join('')}
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Albums Owned by Group</div>
+        ${apg.filter(r=>r.owned_copies>0).slice(0,8).map(r=>`<div class="bar-item"><div class="bar-label">${r.group_name}</div><div class="bar-track"><div class="bar-fill" style="width:${(r.owned_copies/mx2)*100}%;background:linear-gradient(90deg,var(--gold),var(--cyan))"></div></div><div class="bar-val">${r.owned_copies}</div></div>`).join('')}
+      </div>
+    `;
+  }catch{}
+}
+
+/* GROUPS */
+let _groups=[];
+async function loadGroups(){
+  try{
+    _groups=await api('GET','/groups');
+    const tf=$('filter-group-type')?.value||'';
+    const rows=tf?_groups.filter(g=>g.gender_type===tf):_groups;
+    $('cnt-groups').textContent=rows.length;
+    const tc={'Boy Group':'cyan','Girl Group':'pink','Co-ed':'purple','Solo':'gold'};
+    tbody('groups-tbody',rows.map(g=>`<tr>
+      <td><b>${g.group_name}</b></td>
+      <td style="color:var(--muted)">${g.agency||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${g.debut_date||'—'}</td>
+      <td>${g.fandom_name?`<span class="badge badge-purple">${g.fandom_name}</span>`:'—'}</td>
+      <td>${g.gender_type?`<span class="badge badge-${tc[g.gender_type]||'muted'}">${g.gender_type}</span>`:'—'}</td>
+      <td><span class="badge ${g.active?'badge-green':'badge-red'}">${g.active?'Active':'Inactive'}</span></td>
+      <td class="action-cell">
+        <button class="btn btn-ghost btn-sm" onclick="viewMembers(${g.group_id},'${esc(g.group_name)}')">Members</button>
+        <button class="btn btn-ghost btn-sm" onclick="editGroup(${g.group_id})">Edit</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteGroup(${g.group_id},'${esc(g.group_name)}')">✕</button>
+      </td></tr>`).join(''));
+    // populate album filter
+    const sel=$('filter-album-group');
+    if(sel&&sel.options.length<=1)_groups.forEach(g=>{const o=document.createElement('option');o.value=g.group_id;o.textContent=g.group_name;sel.appendChild(o);});
+  }catch{}
+}
+async function viewMembers(gid,gname){
+  try{const m=await api('GET',`/groups/${gid}/members`);alert(`${gname} (${m.length} members):\n\n${m.map(x=>`${x.stage_name} — ${x.position||'Member'}`).join('\n')||'None'}`);}catch{}
+}
+function openGroupModal(g=null){
+  $('modal-group-title').textContent=g?'EDIT GROUP':'ADD GROUP';
+  setVal('group-id',g?.group_id||'');setVal('group-name',g?.group_name||'');
+  setVal('group-agency',g?.agency||'');setVal('group-debut',g?.debut_date||'');
+  setVal('group-fandom',g?.fandom_name||'');setVal('group-type',g?.gender_type||'');
+  setVal('group-active',g?.active??1);openModal('modal-group');
+}
+async function editGroup(gid){try{openGroupModal(await api('GET',`/groups/${gid}`));}catch{}}
+async function saveGroup(){
+  const id=val('group-id');
+  const b={group_name:val('group-name'),agency:val('group-agency')||null,debut_date:dateOrNull(val('group-debut')),
+    fandom_name:val('group-fandom')||null,gender_type:val('group-type')||null,active:parseInt(val('group-active'))};
+  try{
+    if(id){await api('PUT',`/groups/${id}`,b);toast('Group updated!','success');}
+    else{await api('POST','/groups',b);toast('Group created!','success');}
+    closeModal('modal-group');loadGroups();
+  }catch{}
+}
+async function deleteGroup(gid,gname){
+  confirmDelete(`Delete "${gname}"? Will fail if it has albums.`,async()=>{
+    try{await api('DELETE',`/groups/${gid}`);toast('Group deleted','success');loadGroups();}catch{}
+  });
+}
+
+/* ARTISTS */
+let _artists=[];
+async function loadArtists(){
+  try{
+    _artists=await api('GET','/artists');
+    const gf=$('filter-artist-gender')?.value;
+    const af=$('filter-artist-active')?.value;
+    let rows=_artists;
+    if(gf)rows=rows.filter(a=>a.gender===gf);
+    if(af!=='')rows=rows.filter(a=>String(a.active)===af);
+    $('cnt-artists').textContent=rows.length;
+    tbody('artists-tbody',rows.map(a=>`<tr>
+      <td><b>${a.stage_name}</b></td>
+      <td style="color:var(--muted)">${a.real_name||'—'}</td>
+      <td>${a.nationality}</td>
+      <td>${a.gender?`<span class="badge badge-${a.gender==='Male'?'cyan':'pink'}">${a.gender}</span>`:'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${a.debut_year||'—'}</td>
+      <td><span class="badge ${a.active?'badge-green':'badge-muted'}">${a.active?'Active':'Inactive'}</span></td>
+      <td class="action-cell">
+        <button class="btn btn-ghost btn-sm" onclick="editArtist(${a.artist_id})">Edit</button>
+        <button class="btn btn-secondary btn-sm" onclick="deactivateArtist(${a.artist_id},'${esc(a.stage_name)}')" title="Soft-delete">⏸</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteArtist(${a.artist_id},'${esc(a.stage_name)}')">✕</button>
+      </td></tr>`).join(''));
+    // populate pc artist filter
+    const sel=$('filter-pc-artist');
+    if(sel&&sel.options.length<=1)_artists.forEach(a=>{const o=document.createElement('option');o.value=a.artist_id;o.textContent=a.stage_name;sel.appendChild(o);});
+  }catch{}
+}
+async function searchArtists(q){
+  if(!q.trim()){loadArtists();return;}
+  try{
+    const r=await api('GET',`/artists/search?q=${encodeURIComponent(q)}`);
+    $('cnt-artists').textContent=r.length;
+    tbody('artists-tbody',r.map(a=>`<tr>
+      <td><b>${a.stage_name}</b></td><td style="color:var(--muted)">${a.real_name||'—'}</td>
+      <td>${a.nationality}</td><td>${a.gender||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${a.debut_year||'—'}</td>
+      <td><span class="badge ${a.active?'badge-green':'badge-muted'}">${a.active?'Active':'Inactive'}</span></td>
+      <td class="action-cell">
+        <button class="btn btn-ghost btn-sm" onclick="editArtist(${a.artist_id})">Edit</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteArtist(${a.artist_id},'${esc(a.stage_name)}')">✕</button>
+      </td></tr>`).join(''));
+  }catch{}
+}
+function openArtistModal(a=null){
+  $('modal-artist-title').textContent=a?'EDIT ARTIST':'ADD ARTIST';
+  setVal('artist-id',a?.artist_id||'');setVal('artist-stage',a?.stage_name||'');
+  setVal('artist-real',a?.real_name||'');setVal('artist-nat',a?.nationality||'South Korean');
+  setVal('artist-gender',a?.gender||'');setVal('artist-dob',a?.birthdate||'');
+  setVal('artist-debut',a?.debut_year||'');setVal('artist-notes',a?.notes||'');
+  openModal('modal-artist');
+}
+async function editArtist(aid){try{openArtistModal(await api('GET',`/artists/${aid}`));}catch{}}
+async function saveArtist(){
+  const id=val('artist-id');
+  const b={stage_name:val('artist-stage'),real_name:val('artist-real')||null,birthdate:dateOrNull(val('artist-dob')),
+    nationality:val('artist-nat')||'South Korean',gender:val('artist-gender')||null,
+    active:1,debut_year:intOrNull(val('artist-debut')),notes:val('artist-notes')||null};
+  try{
+    if(id){await api('PUT',`/artists/${id}`,b);toast('Artist updated!','success');}
+    else{await api('POST','/artists',b);toast('Artist created!','success');}
+    closeModal('modal-artist');loadArtists();
+  }catch{}
+}
+async function deactivateArtist(aid,name){
+  if(!confirm(`Deactivate "${name}"? They'll be marked inactive.`))return;
+  try{await api('PATCH',`/artists/${aid}/deactivate`);toast(`${name} deactivated`,'info');loadArtists();}catch{}
+}
+async function deleteArtist(aid,name){
+  confirmDelete(`Delete artist "${name}"?`,async()=>{
+    try{await api('DELETE',`/artists/${aid}`);toast('Artist deleted','success');loadArtists();}catch{}
+  });
+}
+
+/* ALBUMS */
+let _albums=[];
+async function loadAlbums(){
+  try{
+    const gid=$('filter-album-group')?.value;
+    const atype=$('filter-album-type')?.value;
+    const path=gid?`/albums?group_id=${gid}`:'/albums';
+    let rows=await api('GET',path);
+    _albums=rows;
+    if(atype)rows=rows.filter(a=>a.album_type===atype);
+    $('cnt-albums').textContent=rows.length;
+    const tc={'Mini Album':'cyan','Full Album':'pink','Special Album':'gold','Single Album':'purple','Repackage':'green','OST':'muted','Collaboration':'muted'};
+    tbody('albums-tbody',rows.map(a=>`<tr>
+      <td><b>${a.group_name||'—'}</b></td>
+      <td>${a.title}${a.is_limited?' <span class="badge badge-gold" style="font-size:9px">LTD</span>':''}</td>
+      <td><span class="badge badge-${tc[a.album_type]||'muted'}">${a.album_type}</span></td>
+      <td style="color:var(--muted);font-size:12px">${a.version_name||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${a.release_date||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${a.track_count||'—'}</td>
+      <td class="action-cell">
+        <button class="btn btn-ghost btn-sm" onclick="editAlbum(${a.album_id})">Edit</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteAlbum(${a.album_id},'${esc(a.title)}')">✕</button>
+      </td></tr>`).join(''));
+  }catch{}
+}
+async function openAlbumModal(alb=null){
+  if(!_groups.length)await loadGroups();
+  const sel=$('album-group');
+  sel.innerHTML=_groups.map(g=>`<option value="${g.group_id}"${alb?.group_id===g.group_id?' selected':''}>${g.group_name}</option>`).join('');
+  $('modal-album-title').textContent=alb?'EDIT ALBUM':'ADD ALBUM';
+  setVal('album-id',alb?.album_id||'');setVal('album-title',alb?.title||'');
+  setVal('album-type',alb?.album_type||'Mini Album');setVal('album-version',alb?.version_name||'');
+  setVal('album-release',alb?.release_date||'');setVal('album-tracks',alb?.track_count||'');
+  setVal('album-label',alb?.label||'');setVal('album-limited',alb?.is_limited??0);
+  openModal('modal-album');
+}
+async function editAlbum(aid){try{openAlbumModal(await api('GET',`/albums/${aid}`));}catch{}}
+async function saveAlbum(){
+  const id=val('album-id');
+  const b={group_id:intOrNull(val('album-group')),title:val('album-title'),album_type:val('album-type'),
+    release_date:dateOrNull(val('album-release')),version_name:val('album-version')||null,
+    track_count:intOrNull(val('album-tracks')),label:val('album-label')||null,is_limited:parseInt(val('album-limited'))};
+  try{
+    if(id){await api('PUT',`/albums/${id}`,b);toast('Album updated!','success');}
+    else{await api('POST','/albums',b);toast('Album created!','success');}
+    closeModal('modal-album');loadAlbums();
+  }catch{}
+}
+async function deleteAlbum(aid,title){
+  confirmDelete(`Delete album "${title}"?`,async()=>{
+    try{await api('DELETE',`/albums/${aid}`);toast('Album deleted','success');loadAlbums();}catch{}
+  });
+}
+
+/* COLLECTION */
+async function loadCollection(){
+  try{
+    let items=await api('GET','/collection');
+    const cf=$('filter-coll-cond')?.value;
+    if(cf)items=items.filter(c=>c.condition===cf);
+    $('cnt-collection').textContent=items.length;
+    const cc={'Mint':'green','Near Mint':'cyan','Very Good':'gold','Good':'muted','Fair':'red','Poor':'red'};
+    tbody('collection-tbody',items.map(c=>`<tr>
+      <td><b>${c.group_name||'—'}</b></td>
+      <td>${c.title}</td>
+      <td style="color:var(--muted);font-size:12px">${c.version_name||'—'}</td>
+      <td><span class="badge badge-${cc[c.condition]||'muted'}">${c.condition}</span></td>
+      <td style="font-family:var(--font-mono);font-size:12px">${c.purchase_price!=null?'$'+parseFloat(c.purchase_price).toFixed(2):'—'}</td>
+      <td style="color:var(--muted);font-size:12px">${c.purchase_from||'—'}</td>
+      <td>${c.is_sealed?'<span class="badge badge-cyan">Sealed</span>':'<span class="badge badge-muted">Opened</span>'}</td>
+      <td class="action-cell">
+        <button class="btn btn-ghost btn-sm" onclick="editCollection(${c.item_id})">Edit</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteCollItem(${c.item_id})">✕</button>
+      </td></tr>`).join(''));
+  }catch{}
+}
+async function loadTotalSpent(){try{const r=await api('GET','/collection/spent');toast(`Total spent: $${r.total_spent.toFixed(2)}`,'info');}catch{}}
+async function openCollectionModal(c=null){
+  if(!_albums.length)await loadAlbums();
+  const sel=$('coll-album');
+  sel.innerHTML=_albums.map(a=>`<option value="${a.album_id}"${c?.album_id===a.album_id?' selected':''}>${a.group_name||''} — ${a.title}</option>`).join('');
+  $('modal-collection-title').textContent=c?'EDIT COLLECTION ITEM':'ADD TO COLLECTION';
+  setVal('coll-id',c?.item_id||'');setVal('coll-cond',c?.condition||'Mint');
+  setVal('coll-date',c?.purchase_date||'');setVal('coll-price',c?.purchase_price||'');
+  setVal('coll-from',c?.purchase_from||'');setVal('coll-sealed',c?.is_sealed??0);
+  setVal('coll-poster',c?.has_poster??0);setVal('coll-inclusions',c?.inclusions||'');
+  openModal('modal-collection');
+}
+async function editCollection(id){try{openCollectionModal(await api('GET',`/collection/${id}`));}catch{}}
+async function saveCollection(){
+  const id=val('coll-id');
+  const b={album_id:intOrNull(val('coll-album')),condition:val('coll-cond'),purchase_date:dateOrNull(val('coll-date')),
+    purchase_price:floatOrNull(val('coll-price')),purchase_from:val('coll-from')||null,
+    is_sealed:parseInt(val('coll-sealed')),has_poster:parseInt(val('coll-poster')),has_cd:1,inclusions:val('coll-inclusions')||null};
+  try{
+    if(id){await api('PUT',`/collection/${id}`,b);toast('Updated!','success');}
+    else{await api('POST','/collection',b);toast('Added to collection!','success');}
+    closeModal('modal-collection');loadCollection();
+  }catch{}
+}
+async function deleteCollItem(id){
+  confirmDelete('Remove this copy from your collection?',async()=>{
+    try{await api('DELETE',`/collection/${id}`);toast('Removed','success');loadCollection();}catch{}
+  });
+}
+
+/* PHOTOCARDS */
+async function loadPhotocards(){
+  try{
+    const to=$('filter-pc-trade')?.value==='trade';
+    const aid=$('filter-pc-artist')?.value;
+    let path='/photocards';
+    if(to)path+='?for_trade=1';
+    else if(aid)path+=`?artist_id=${aid}`;
+    const cards=await api('GET',path);
+    $('cnt-photocards').textContent=cards.length;
+    const tc={'Standard':'muted','Special':'gold','Lucky Draw':'pink','POB':'purple','Pre-order':'cyan','Unit':'green','Solo':'green'};
+    tbody('photocards-tbody',cards.map(p=>`<tr>
+      <td><b>${p.stage_name||'—'}</b></td>
+      <td style="font-size:12px">${p.album_title||'—'}</td>
+      <td><span class="badge badge-${tc[p.card_type]||'muted'}">${p.card_type}</span></td>
+      <td><span class="badge badge-${p.condition==='Mint'?'green':'muted'}">${p.condition}</span></td>
+      <td style="font-family:var(--font-mono);font-size:12px">${p.estimated_value!=null?'$'+parseFloat(p.estimated_value).toFixed(2):'—'}</td>
+      <td><button class="btn btn-sm ${p.for_trade?'btn-primary':'btn-ghost'}" onclick="toggleTrade(${p.photocard_id})">${p.for_trade?'🔄 Trading':'Trade?'}</button></td>
+      <td class="action-cell">
+        <button class="btn btn-ghost btn-sm" onclick="editPhotocard(${p.photocard_id})">Edit</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deletePhotocard(${p.photocard_id})">✕</button>
+      </td></tr>`).join(''));
+  }catch{}
+}
+async function loadPcValue(){try{const r=await api('GET','/photocards/value');toast(`Photocard value: $${r.total_value.toFixed(2)}`,'info');}catch{}}
+async function toggleTrade(pid){
+  try{const r=await api('PATCH',`/photocards/${pid}/toggle-trade`);toast(r.for_trade?'Marked for trade 🔄':'Removed from trade','success');loadPhotocards();}catch{}
+}
+async function openPhotocardModal(p=null){
+  if(!_artists.length)await loadArtists();
+  if(!_albums.length)await loadAlbums();
+  $('pc-artist').innerHTML=_artists.map(a=>`<option value="${a.artist_id}"${p?.artist_id===a.artist_id?' selected':''}>${a.stage_name}</option>`).join('');
+  $('pc-album').innerHTML=_albums.map(a=>`<option value="${a.album_id}"${p?.album_id===a.album_id?' selected':''}>${a.group_name||''} — ${a.title}</option>`).join('');
+  $('modal-pc-title').textContent=p?'EDIT PHOTOCARD':'ADD PHOTOCARD';
+  setVal('pc-id',p?.photocard_id||'');setVal('pc-item',p?.item_id||'');
+  setVal('pc-type',p?.card_type||'Standard');setVal('pc-cond',p?.condition||'Mint');
+  setVal('pc-value',p?.estimated_value||'');setVal('pc-date',p?.acquired_date||'');
+  setVal('pc-from',p?.acquired_from||'');setVal('pc-trade',p?.for_trade??0);setVal('pc-dup',p?.is_duplicate??0);
+  openModal('modal-photocard');
+}
+async function editPhotocard(pid){try{openPhotocardModal(await api('GET',`/photocards/${pid}`));}catch{}}
+async function savePhotocard(){
+  const id=val('pc-id');
+  const b={item_id:intOrNull(val('pc-item')),artist_id:intOrNull(val('pc-artist')),album_id:intOrNull(val('pc-album')),
+    card_type:val('pc-type'),condition:val('pc-cond'),acquired_date:dateOrNull(val('pc-date')),
+    acquired_from:val('pc-from')||null,estimated_value:floatOrNull(val('pc-value')),
+    for_trade:parseInt(val('pc-trade')),is_duplicate:parseInt(val('pc-dup'))};
+  try{
+    if(id){await api('PUT',`/photocards/${id}`,b);toast('Photocard updated!','success');}
+    else{await api('POST','/photocards',b);toast('Photocard added!','success');}
+    closeModal('modal-photocard');loadPhotocards();
+  }catch{}
+}
+async function deletePhotocard(pid){
+  confirmDelete('Delete this photocard?',async()=>{
+    try{await api('DELETE',`/photocards/${pid}`);toast('Deleted','success');loadPhotocards();}catch{}
+  });
+}
+
+/* WISHLIST */
+async function loadWishlist(){
+  try{
+    const po=$('filter-wish-pending')?.value==='pending';
+    const tf=$('filter-wish-type')?.value||'';
+    let items=await api('GET',po?'/wishlist?pending=1':'/wishlist');
+    if(tf)items=items.filter(w=>w.item_type===tf);
+    $('cnt-wishlist').textContent=items.filter(w=>!w.acquired).length;
+    const pc=['','pink','pink','gold','muted','muted'];
+    tbody('wishlist-tbody',items.map(w=>`<tr style="${w.acquired?'opacity:.5':''}">
+      <td><span class="badge badge-${w.item_type==='Album'?'cyan':w.item_type==='Photocard'?'pink':'gold'}">${w.item_type}</span></td>
+      <td>${w.description}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${w.max_budget!=null?'$'+parseFloat(w.max_budget).toFixed(0):'—'}</td>
+      <td><span class="badge badge-${pc[w.priority]||'muted'}">P${w.priority}</span></td>
+      <td><span class="badge ${w.acquired?'badge-green':'badge-muted'}">${w.acquired?'✔ Got it':'Pending'}</span></td>
+      <td class="action-cell">
+        ${!w.acquired?`<button class="btn btn-secondary btn-sm" onclick="acquireWish(${w.wish_id})">Got it!</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="editWish(${w.wish_id})">Edit</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteWish(${w.wish_id})">✕</button>
+      </td></tr>`).join(''));
+  }catch{}
+}
+function openWishModal(w=null){
+  $('modal-wish-title').textContent=w?'EDIT WISH':'ADD TO WISHLIST';
+  setVal('wish-id',w?.wish_id||'');setVal('wish-type',w?.item_type||'Album');
+  setVal('wish-desc',w?.description||'');setVal('wish-budget',w?.max_budget||'');
+  setVal('wish-priority',w?.priority??3);setVal('wish-acquired',w?.acquired??0);
+  setVal('wish-notes',w?.notes||'');openModal('modal-wish');
+}
+async function editWish(wid){try{openWishModal(await api('GET',`/wishlist/${wid}`));}catch{}}
+async function saveWish(){
+  const id=val('wish-id');
+  const b={item_type:val('wish-type'),description:val('wish-desc'),max_budget:floatOrNull(val('wish-budget')),
+    priority:parseInt(val('wish-priority')),acquired:parseInt(val('wish-acquired')),notes:val('wish-notes')||null};
+  try{
+    if(id){await api('PUT',`/wishlist/${id}`,b);toast('Wish updated!','success');}
+    else{await api('POST','/wishlist',b);toast('Added to wishlist!','success');}
+    closeModal('modal-wish');loadWishlist();
+  }catch{}
+}
+async function acquireWish(wid){
+  try{await api('PATCH',`/wishlist/${wid}/acquire`);toast('Marked as acquired! 🎉','success');loadWishlist();}catch{}
+}
+async function deleteWish(wid){
+  confirmDelete('Remove from wishlist?',async()=>{
+    try{await api('DELETE',`/wishlist/${wid}`);toast('Deleted','success');loadWishlist();}catch{}
+  });
+}
+
+/* INIT */
+(async()=>{
+  await checkHealth();
+  await loadDashboard();
+  await loadGroups();
+  await loadArtists();
+  await loadAlbums();
+})();
+</script>
+</body>
+</html>
