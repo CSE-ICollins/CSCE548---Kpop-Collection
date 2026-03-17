@@ -107,3 +107,103 @@ New Web Service → connect repo
 Build command: pip install flask gunicorn
 Start command: gunicorn service.app:app --bind 0.0.0.0:$PORT
 Env var: DB_PATH=/opt/render/project/src/kpop_collection.db
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+📸 Overview
+KPOP VAULT lets you track your K-pop album collection, photocards, groups/artists, and wishlist through a web interface backed by a REST API.
+LayerTechnologyDescriptionDatabaseSQLite 37 tables, 9 FK relationships, 114 seed rowsData Access (DAL)Python sqlite3Full CRUD for all 7 tablesBusiness LayerPython classesValidation, business rules, typed exceptionsService LayerFlask 3.1 REST35 endpoints, JSON, CORS, file loggingFrontendHTML/CSS/JSSingle-page app, no framework, full CRUD UI
+
+🚀 Quick Start
+Prerequisites
+
+Python 3.10+ — python.org/downloads
+pip — bundled with Python
+Git — git-scm.com
+A modern web browser
+
+1. Clone the repo
+bashgit clone https://github.com/[your-username]/kpop-vault.git
+cd kpop-vault
+2. Install dependencies
+bashpip install -r requirements.txt
+3. Initialize the database
+bashpython init_db.py
+# Creates kpop_collection.db with 114 seed rows across 7 tables
+4. Start the API server
+bashpython service/app.py
+# API live at http://127.0.0.1:5000
+# Verify: http://127.0.0.1:5000/health -> {"status": "ok"}
+5. Open the frontend
+bash# Option A — static server (second terminal)
+cd frontend && python -m http.server 8080
+# Open: http://127.0.0.1:8080
+
+# Option B — direct file open
+# Double-click frontend/index.html in your file explorer
+
+📁 Project Structure
+kpop-vault/
+├── kpop_dal.py              # Data Access Layer
+├── kpop_collection.db       # SQLite database
+├── init_db.py               # DB init & seed script
+├── schema.sql               # SQL DDL
+├── seed_data.sql            # 114-row seed data
+├── requirements.txt
+├── business/
+│   ├── exceptions.py        # Domain exception hierarchy
+│   ├── artist_service.py    # Artist business logic
+│   └── group_service.py     # All other business services
+├── service/
+│   └── app.py               # Flask REST API (35 endpoints)
+├── frontend/
+│   └── index.html           # Web frontend (58KB, no framework)
+├── client/
+│   └── console_client.py    # Console test client
+└── logs/
+    └── api.log              # Auto-created by server
+
+🔌 API Reference
+Base URL: http://127.0.0.1:5000/api/v1
+ResourceGETPOSTPUTDELETESpecial/artists✔ list, single, search✔✔✔PATCH /deactivate/groups✔ list, single, members✔✔✔—/albums✔ list, by-group, single✔✔✔—/collection✔ list, spent, single✔✔✔—/photocards✔ list, by-artist, trade, value, single✔✔✔PATCH /toggle-trade/wishlist✔ list, pending, single✔✔✔PATCH /acquire/reportssummary, pca, apg————
+Example:
+bashcurl http://127.0.0.1:5000/api/v1/artists
+curl -X POST http://127.0.0.1:5000/api/v1/groups \
+  -H "Content-Type: application/json" \
+  -d '{"group_name":"LE SSERAFIM","agency":"HYBE","gender_type":"Girl Group"}'
+
+🌐 Frontend Pages
+PageTablesCreateUpdateDeleteSpecialDashboardReports———Bar chartsGroupsgroups, members✔✔✔View rosterArtistsartists✔✔✔DeactivateAlbumsalbums✔✔✔Filter by groupOwned Albumscollection_items✔✔✔Total spentPhotocardsphotocards✔✔✔Toggle tradeWishlistwishlist✔✔✔Mark acquired
+
+☁️ Cloud Deployment (Render.com)
+
+Push repo to GitHub
+render.com → New + → Web Service → connect repo
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn service.app:app --bind 0.0.0.0:$PORT
+Env Var: DB_PATH = /opt/render/project/src/kpop_collection.db
+Update frontend/index.html line 1: const API = 'https://your-app.onrender.com/api/v1';
+
+
+Free tier spins down after 15 min. First request after spin-down takes ~30s.
+
+
+✅ System Test Results
+bashpython system_test.py
+CategoryCountResultHealth & Reports4✔ PASSGroups CRUD6✔ PASSArtists CRUD + deactivate7✔ PASSAlbums CRUD5✔ PASSCollection CRUD5✔ PASSPhotocards CRUD + toggle8✔ PASSWishlist CRUD + acquire7✔ PASSBusiness rule validation7✔ PASSCleanup3✔ PASSTOTAL5252 / 52 PASS
+Each write test verifies both the HTTP response and the SQLite database directly.
+
+🔧 Environment Variables
+VariableDefaultDescriptionDB_PATH<root>/kpop_collection.dbPath to SQLite databaseLOG_LEVELINFODEBUG / INFO / WARNING / ERRORPORT5000Flask server port
+
+🛠️ Troubleshooting
+ProblemSolutionModuleNotFoundError: flaskpip install -r requirements.txtkpop_collection.db not foundpython init_db.pyPort 5000 already in usePORT=5001 python service/app.pyFrontend red "API Offline"Start Flask: python service/app.pyCORS error in browser consoleVerify add_cors() in service/app.pyFK constraint on DELETEDelete children first, or use /deactivate for artists
+
+🤖 AI Tool Notes
+Built with Claude (Anthropic) across 4 projects.
+AI did well: Schema design, all 35 Flask routes, business layer structure, full frontend visual design.
+Required manual fixes: CORS configuration, DB_PATH portability, file logging, @handle_biz decorator refactor, frontend filter wiring and XSS-safe esc() helper.
+Ratio: ~85% AI-generated, ~15% manual refinement.
+
+📄 License
+MIT — free to use, modify, and distribute.
+//
