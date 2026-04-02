@@ -65,12 +65,12 @@ sys.path.insert(0, _ROOT)
 _db_path = os.environ.get("DB_PATH",
                           os.path.join(_ROOT, "kpop_collection.db"))
 # Patch the DAL module's DB_PATH before importing anything else
-import kpop_dal
+import kpop_collection.kpop_dal as kpop_dal
 kpop_dal.DB_PATH = _db_path
 
 from flask import Flask, jsonify, request, Response
-from business.artist_service  import ArtistBusiness
-from business.group_service   import (GroupBusiness, AlbumBusiness,
+from business.artist_services  import ArtistBusiness
+from business.group_services   import (GroupBusiness, AlbumBusiness,
                                       CollectionItemBusiness, PhotocardBusiness,
                                       WishlistBusiness, ReportBusiness)
 from business.exceptions      import (NotFoundError, ValidationError,
