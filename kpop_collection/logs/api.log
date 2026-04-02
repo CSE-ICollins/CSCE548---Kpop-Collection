@@ -165,3 +165,135 @@ sqlite3.OperationalError: table artists has no column named name
 2026-04-02 15:13:42,208 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:13:42] "DELETE /api/v1/photocards/21 HTTP/1.1" 200 -
 2026-04-02 15:13:42,245 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:13:42] "DELETE /api/v1/collection/19 HTTP/1.1" 200 -
 2026-04-02 15:13:42,265 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:13:42] "DELETE /api/v1/albums/15 HTTP/1.1" 200 -
+2026-04-02 15:32:31,786 [INFO] kpop.api: K-Pop Collection API initialized. DB: C:\Users\thing\OneDrive\Documents\GitHub\CSCE548---Kpop-Collection\kpop_collection\kpop_collection.db
+2026-04-02 15:32:31,788 [INFO] kpop.api: Starting Flask dev server on port 5000
+2026-04-02 15:32:31,822 [INFO] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.37.124.104:5000
+2026-04-02 15:32:31,823 [INFO] werkzeug: [33mPress CTRL+C to quit[0m
+2026-04-02 15:32:45,084 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /health HTTP/1.1" 200 -
+2026-04-02 15:32:45,103 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/reports/summary HTTP/1.1" 200 -
+2026-04-02 15:32:45,111 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/reports/photocards-per-artist HTTP/1.1" 200 -
+2026-04-02 15:32:45,118 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/reports/albums-per-group HTTP/1.1" 200 -
+2026-04-02 15:32:45,135 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/groups HTTP/1.1" 200 -
+2026-04-02 15:32:45,144 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/groups/1 HTTP/1.1" 200 -
+2026-04-02 15:32:45,152 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/groups/1/members HTTP/1.1" 200 -
+2026-04-02 15:32:45,227 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "[35m[1mPOST /api/v1/groups HTTP/1.1[0m" 201 -
+2026-04-02 15:32:45,261 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "PUT /api/v1/groups/15 HTTP/1.1" 200 -
+2026-04-02 15:32:45,303 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "DELETE /api/v1/groups/15 HTTP/1.1" 200 -
+2026-04-02 15:32:45,327 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/artists HTTP/1.1" 200 -
+2026-04-02 15:32:45,355 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/artists/1 HTTP/1.1" 200 -
+2026-04-02 15:32:45,366 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/artists/search?q=ji HTTP/1.1" 200 -
+2026-04-02 15:32:45,388 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "[35m[1mPOST /api/v1/artists HTTP/1.1[0m" 201 -
+2026-04-02 15:32:45,419 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "PUT /api/v1/artists/22 HTTP/1.1" 200 -
+2026-04-02 15:32:45,442 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "PATCH /api/v1/artists/22/deactivate HTTP/1.1" 200 -
+2026-04-02 15:32:45,475 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "DELETE /api/v1/artists/22 HTTP/1.1" 200 -
+2026-04-02 15:32:45,497 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/albums HTTP/1.1" 200 -
+2026-04-02 15:32:45,515 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/albums?group_id=1 HTTP/1.1" 200 -
+2026-04-02 15:32:45,546 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/albums/1 HTTP/1.1" 200 -
+2026-04-02 15:32:45,593 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "[35m[1mPOST /api/v1/albums HTTP/1.1[0m" 201 -
+2026-04-02 15:32:45,626 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "PUT /api/v1/albums/16 HTTP/1.1" 200 -
+2026-04-02 15:32:45,640 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/collection HTTP/1.1" 200 -
+2026-04-02 15:32:45,655 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/collection/spent HTTP/1.1" 200 -
+2026-04-02 15:32:45,665 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/collection/1 HTTP/1.1" 200 -
+2026-04-02 15:32:45,696 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "[35m[1mPOST /api/v1/collection HTTP/1.1[0m" 201 -
+2026-04-02 15:32:45,721 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "PUT /api/v1/collection/20 HTTP/1.1" 200 -
+2026-04-02 15:32:45,736 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/photocards HTTP/1.1" 200 -
+2026-04-02 15:32:45,744 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/photocards?for_trade=1 HTTP/1.1" 200 -
+2026-04-02 15:32:45,770 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/photocards?artist_id=5 HTTP/1.1" 200 -
+2026-04-02 15:32:45,784 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/photocards/value HTTP/1.1" 200 -
+2026-04-02 15:32:45,815 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "GET /api/v1/photocards/1 HTTP/1.1" 200 -
+2026-04-02 15:32:45,851 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "[35m[1mPOST /api/v1/photocards HTTP/1.1[0m" 201 -
+2026-04-02 15:32:45,920 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "PUT /api/v1/photocards/22 HTTP/1.1" 200 -
+2026-04-02 15:32:45,988 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:45] "PATCH /api/v1/photocards/22/toggle-trade HTTP/1.1" 200 -
+2026-04-02 15:32:46,012 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "GET /api/v1/wishlist HTTP/1.1" 200 -
+2026-04-02 15:32:46,019 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "GET /api/v1/wishlist?pending=1 HTTP/1.1" 200 -
+2026-04-02 15:32:46,042 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "GET /api/v1/wishlist/1 HTTP/1.1" 200 -
+2026-04-02 15:32:46,069 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "[35m[1mPOST /api/v1/wishlist HTTP/1.1[0m" 201 -
+2026-04-02 15:32:46,105 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "PUT /api/v1/wishlist/12 HTTP/1.1" 200 -
+2026-04-02 15:32:46,153 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "PATCH /api/v1/wishlist/12/acquire HTTP/1.1" 200 -
+2026-04-02 15:32:46,187 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "DELETE /api/v1/wishlist/12 HTTP/1.1" 200 -
+2026-04-02 15:32:46,210 [WARNING] kpop.api: API error 400: stage_name is required and cannot be blank.
+2026-04-02 15:32:46,212 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "[31m[1mPOST /api/v1/artists HTTP/1.1[0m" 400 -
+2026-04-02 15:32:46,226 [WARNING] kpop.api: API error 400: gender must be one of ['Female', 'Male', 'Non-binary'] or null.
+2026-04-02 15:32:46,228 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "[31m[1mPOST /api/v1/artists HTTP/1.1[0m" 400 -
+2026-04-02 15:32:46,234 [WARNING] kpop.api: API error 400: debut_year must be between 1990 and 2026.
+2026-04-02 15:32:46,235 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "[31m[1mPOST /api/v1/artists HTTP/1.1[0m" 400 -
+2026-04-02 15:32:46,259 [WARNING] kpop.api: API error 400: purchase_price cannot be negative.
+2026-04-02 15:32:46,260 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "[31m[1mPOST /api/v1/collection HTTP/1.1[0m" 400 -
+2026-04-02 15:32:46,266 [WARNING] kpop.api: API error 400: album_type must be one of ['Collaboration', 'Full Album', 'Mini Album', 'OST', 'Repackage', 'Single Album', 'Special Album'].
+2026-04-02 15:32:46,267 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "[31m[1mPOST /api/v1/albums HTTP/1.1[0m" 400 -
+2026-04-02 15:32:46,286 [WARNING] kpop.api: API error 404: Artist 99999 not found
+2026-04-02 15:32:46,287 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "[33mGET /api/v1/artists/99999 HTTP/1.1[0m" 404 -
+2026-04-02 15:32:46,300 [WARNING] kpop.api: API error 404: Album 99999 not found
+2026-04-02 15:32:46,313 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "[33mGET /api/v1/albums/99999 HTTP/1.1[0m" 404 -
+2026-04-02 15:32:46,385 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "DELETE /api/v1/photocards/22 HTTP/1.1" 200 -
+2026-04-02 15:32:46,429 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "DELETE /api/v1/collection/20 HTTP/1.1" 200 -
+2026-04-02 15:32:46,477 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:32:46] "DELETE /api/v1/albums/16 HTTP/1.1" 200 -
+2026-04-02 15:36:39,382 [INFO] kpop.api: K-Pop Collection API initialized. DB: C:\Users\thing\OneDrive\Documents\GitHub\CSCE548---Kpop-Collection\kpop_collection\kpop_collection.db
+2026-04-02 15:36:39,382 [INFO] kpop.api: Starting Flask dev server on port 5000
+2026-04-02 15:36:39,420 [INFO] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.37.124.104:5000
+2026-04-02 15:36:39,420 [INFO] werkzeug: [33mPress CTRL+C to quit[0m
+2026-04-02 15:37:05,485 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "GET /health HTTP/1.1" 200 -
+2026-04-02 15:37:05,498 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "GET /api/v1/reports/summary HTTP/1.1" 200 -
+2026-04-02 15:37:05,525 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "GET /api/v1/reports/photocards-per-artist HTTP/1.1" 200 -
+2026-04-02 15:37:05,544 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "GET /api/v1/reports/albums-per-group HTTP/1.1" 200 -
+2026-04-02 15:37:05,579 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "GET /api/v1/groups HTTP/1.1" 200 -
+2026-04-02 15:37:05,591 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "GET /api/v1/groups/1 HTTP/1.1" 200 -
+2026-04-02 15:37:05,629 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "GET /api/v1/groups/1/members HTTP/1.1" 200 -
+2026-04-02 15:37:05,734 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "[35m[1mPOST /api/v1/groups HTTP/1.1[0m" 201 -
+2026-04-02 15:37:05,819 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:05] "PUT /api/v1/groups/16 HTTP/1.1" 200 -
+2026-04-02 15:37:06,016 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "DELETE /api/v1/groups/16 HTTP/1.1" 200 -
+2026-04-02 15:37:06,234 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/artists HTTP/1.1" 200 -
+2026-04-02 15:37:06,332 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/artists/1 HTTP/1.1" 200 -
+2026-04-02 15:37:06,348 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/artists/search?q=ji HTTP/1.1" 200 -
+2026-04-02 15:37:06,386 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "[35m[1mPOST /api/v1/artists HTTP/1.1[0m" 201 -
+2026-04-02 15:37:06,434 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "PUT /api/v1/artists/23 HTTP/1.1" 200 -
+2026-04-02 15:37:06,505 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "PATCH /api/v1/artists/23/deactivate HTTP/1.1" 200 -
+2026-04-02 15:37:06,568 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "DELETE /api/v1/artists/23 HTTP/1.1" 200 -
+2026-04-02 15:37:06,605 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/albums HTTP/1.1" 200 -
+2026-04-02 15:37:06,638 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/albums?group_id=1 HTTP/1.1" 200 -
+2026-04-02 15:37:06,651 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/albums/1 HTTP/1.1" 200 -
+2026-04-02 15:37:06,720 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "[35m[1mPOST /api/v1/albums HTTP/1.1[0m" 201 -
+2026-04-02 15:37:06,785 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "PUT /api/v1/albums/17 HTTP/1.1" 200 -
+2026-04-02 15:37:06,815 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/collection HTTP/1.1" 200 -
+2026-04-02 15:37:06,850 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/collection/spent HTTP/1.1" 200 -
+2026-04-02 15:37:06,879 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "GET /api/v1/collection/1 HTTP/1.1" 200 -
+2026-04-02 15:37:06,926 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "[35m[1mPOST /api/v1/collection HTTP/1.1[0m" 201 -
+2026-04-02 15:37:06,979 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:06] "PUT /api/v1/collection/21 HTTP/1.1" 200 -
+2026-04-02 15:37:07,002 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "GET /api/v1/photocards HTTP/1.1" 200 -
+2026-04-02 15:37:07,020 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "GET /api/v1/photocards?for_trade=1 HTTP/1.1" 200 -
+2026-04-02 15:37:07,051 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "GET /api/v1/photocards?artist_id=5 HTTP/1.1" 200 -
+2026-04-02 15:37:07,069 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "GET /api/v1/photocards/value HTTP/1.1" 200 -
+2026-04-02 15:37:07,099 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "GET /api/v1/photocards/1 HTTP/1.1" 200 -
+2026-04-02 15:37:07,170 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[35m[1mPOST /api/v1/photocards HTTP/1.1[0m" 201 -
+2026-04-02 15:37:07,331 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "PUT /api/v1/photocards/23 HTTP/1.1" 200 -
+2026-04-02 15:37:07,388 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "PATCH /api/v1/photocards/23/toggle-trade HTTP/1.1" 200 -
+2026-04-02 15:37:07,432 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "GET /api/v1/wishlist HTTP/1.1" 200 -
+2026-04-02 15:37:07,440 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "GET /api/v1/wishlist?pending=1 HTTP/1.1" 200 -
+2026-04-02 15:37:07,448 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "GET /api/v1/wishlist/1 HTTP/1.1" 200 -
+2026-04-02 15:37:07,502 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[35m[1mPOST /api/v1/wishlist HTTP/1.1[0m" 201 -
+2026-04-02 15:37:07,551 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "PUT /api/v1/wishlist/13 HTTP/1.1" 200 -
+2026-04-02 15:37:07,610 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "PATCH /api/v1/wishlist/13/acquire HTTP/1.1" 200 -
+2026-04-02 15:37:07,646 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "DELETE /api/v1/wishlist/13 HTTP/1.1" 200 -
+2026-04-02 15:37:07,662 [WARNING] kpop.api: API error 400: stage_name is required and cannot be blank.
+2026-04-02 15:37:07,664 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[31m[1mPOST /api/v1/artists HTTP/1.1[0m" 400 -
+2026-04-02 15:37:07,683 [WARNING] kpop.api: API error 400: gender must be one of ['Female', 'Male', 'Non-binary'] or null.
+2026-04-02 15:37:07,684 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[31m[1mPOST /api/v1/artists HTTP/1.1[0m" 400 -
+2026-04-02 15:37:07,707 [WARNING] kpop.api: API error 400: debut_year must be between 1990 and 2026.
+2026-04-02 15:37:07,711 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[31m[1mPOST /api/v1/artists HTTP/1.1[0m" 400 -
+2026-04-02 15:37:07,727 [WARNING] kpop.api: API error 400: purchase_price cannot be negative.
+2026-04-02 15:37:07,729 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[31m[1mPOST /api/v1/collection HTTP/1.1[0m" 400 -
+2026-04-02 15:37:07,737 [WARNING] kpop.api: API error 400: album_type must be one of ['Collaboration', 'Full Album', 'Mini Album', 'OST', 'Repackage', 'Single Album', 'Special Album'].
+2026-04-02 15:37:07,744 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[31m[1mPOST /api/v1/albums HTTP/1.1[0m" 400 -
+2026-04-02 15:37:07,759 [WARNING] kpop.api: API error 404: Artist 99999 not found
+2026-04-02 15:37:07,760 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[33mGET /api/v1/artists/99999 HTTP/1.1[0m" 404 -
+2026-04-02 15:37:07,782 [WARNING] kpop.api: API error 404: Album 99999 not found
+2026-04-02 15:37:07,783 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "[33mGET /api/v1/albums/99999 HTTP/1.1[0m" 404 -
+2026-04-02 15:37:07,874 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "DELETE /api/v1/photocards/23 HTTP/1.1" 200 -
+2026-04-02 15:37:07,911 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "DELETE /api/v1/collection/21 HTTP/1.1" 200 -
+2026-04-02 15:37:07,934 [INFO] werkzeug: 127.0.0.1 - - [02/Apr/2026 15:37:07] "DELETE /api/v1/albums/17 HTTP/1.1" 200 -
