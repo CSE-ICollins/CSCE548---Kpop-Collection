@@ -69,8 +69,8 @@ import kpop_dal as kpop_dal
 kpop_dal.DB_PATH = _db_path
 
 from flask import Flask, jsonify, request, Response
-from business.artist_services import ArtistBusiness
-from business.group_services import (
+from business.artist_service import ArtistBusiness
+from business.group_service import (
     GroupBusiness,
     AlbumBusiness,
     CollectionItemBusiness,
