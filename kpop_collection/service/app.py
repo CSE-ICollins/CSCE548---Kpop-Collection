@@ -69,11 +69,11 @@ import kpop_collection.kpop_dal as kpop_dal
 kpop_dal.DB_PATH = _db_path
 
 from flask import Flask, jsonify, request, Response
-from business.artist_services  import ArtistBusiness
-from business.group_services   import (GroupBusiness, AlbumBusiness,
+from kpop_collection.business.artist_services import ArtistBusiness
+from kpop_collection.business.group_services import (GroupBusiness, AlbumBusiness,
                                       CollectionItemBusiness, PhotocardBusiness,
                                       WishlistBusiness, ReportBusiness)
-from business.exceptions      import (NotFoundError, ValidationError,
+from kpop_collection.business.exceptions import (NotFoundError, ValidationError,
                                       DependencyError, KpopBusinessError)
 
 # ── logging setup ─────────────────────────────────────────────────────────────
