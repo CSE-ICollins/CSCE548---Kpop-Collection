@@ -57,24 +57,33 @@ import logging
 from functools import wraps
 
 # ── path setup so we can import from the project root ────────────────────────
-_ROOT     = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _FRONTEND = os.path.join(_ROOT, "frontend")
 sys.path.insert(0, _ROOT)
 
 # Point the DAL at the right DB file (can be overridden by env var)
-_db_path = os.environ.get("DB_PATH",
-                          os.path.join(_ROOT, "kpop_collection.db"))
+_db_path = os.environ.get("DB_PATH", os.path.join(_ROOT, "kpop_collection.db"))
+
 # Patch the DAL module's DB_PATH before importing anything else
-import kpop_collection.kpop_dal as kpop_dal
+import kpop_dal as kpop_dal
 kpop_dal.DB_PATH = _db_path
 
 from flask import Flask, jsonify, request, Response
-from kpop_collection.business.artist_services import ArtistBusiness
-from kpop_collection.business.group_services import (GroupBusiness, AlbumBusiness,
-                                      CollectionItemBusiness, PhotocardBusiness,
-                                      WishlistBusiness, ReportBusiness)
-from kpop_collection.business.exceptions import (NotFoundError, ValidationError,
-                                      DependencyError, KpopBusinessError)
+from business.artist_services import ArtistBusiness
+from business.group_services import (
+    GroupBusiness,
+    AlbumBusiness,
+    CollectionItemBusiness,
+    PhotocardBusiness,
+    WishlistBusiness,
+    ReportBusiness,
+)
+from business.exceptions import (
+    NotFoundError,
+    ValidationError,
+    DependencyError,
+    KpopBusinessError,
+)
 
 # ── logging setup ─────────────────────────────────────────────────────────────
 _log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
@@ -88,29 +97,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger("kpop.api")
 
-
 # ── business layer singletons ─────────────────────────────────────────────────
-_artist_biz  = ArtistBusiness()
-_group_biz   = GroupBusiness()
-_album_biz   = AlbumBusiness()
-_item_biz    = CollectionItemBusiness()
-_pc_biz      = PhotocardBusiness()
-_wish_biz    = WishlistBusiness()
-_report_biz  = ReportBusiness()
+_artist_biz = ArtistBusiness()
+_group_biz = GroupBusiness()
+_album_biz = AlbumBusiness()
+_item_biz = CollectionItemBusiness()
+_pc_biz = PhotocardBusiness()
+_wish_biz = WishlistBusiness()
+_report_biz = ReportBusiness()
 
-
-# ── Flask factory ─────────────────────────────────────────────────────────────
 
 def create_app() -> Flask:
-    # Serve the frontend/index.html from the project root
-    app = Flask(__name__,
-                static_folder=_FRONTEND,
-                static_url_path="/static/frontend")
+    """Create and configure the Flask application."""
+    app = Flask(__name__, static_folder=_FRONTEND, static_url_path="/static/frontend")
 
-    # ── CORS — allow any origin so the HTML frontend can call the API ─────────
     @app.after_request
     def add_cors(response):
-        response.headers["Access-Control-Allow-Origin"]  = "*"
+        response.headers["Access-Control-Allow-Origin"] = "*"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
         response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,PATCH,OPTIONS"
         return response
@@ -119,12 +122,10 @@ def create_app() -> Flask:
     def options_handler(ignored=None):
         from flask import make_response
         r = make_response("", 204)
-        r.headers["Access-Control-Allow-Origin"]  = "*"
+        r.headers["Access-Control-Allow-Origin"] = "*"
         r.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
         r.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,PATCH,OPTIONS"
         return r
-
-    # ── error helpers ─────────────────────────────────────────────────────────
 
     def ok(data, status: int = 200) -> Response:
         return jsonify(data), status
@@ -163,71 +164,60 @@ def create_app() -> Flask:
     @app.route("/api/v1/artists", methods=["GET"])
     @handle_biz
     def list_artists():
-        """GET /api/v1/artists — return all artists."""
         return ok(_artist_biz.list_artists())
 
     @app.route("/api/v1/artists/search", methods=["GET"])
     @handle_biz
     def search_artists():
-        """GET /api/v1/artists/search?q=<term> — substring search."""
         q = request.args.get("q", "")
         return ok(_artist_biz.search_artists(q))
 
     @app.route("/api/v1/artists/<int:artist_id>", methods=["GET"])
     @handle_biz
     def get_artist(artist_id):
-        """GET /api/v1/artists/<id> — return one artist."""
         return ok(_artist_biz.get_artist(artist_id))
 
     @app.route("/api/v1/artists", methods=["POST"])
     @handle_biz
     def create_artist():
-        """
-        POST /api/v1/artists
-        Body: { "stage_name": "...", "real_name": "...", "gender": "...",
-                "nationality": "...", "debut_year": 2020, "active": 1 }
-        """
         b = jbody()
         result = _artist_biz.add_artist(
-            stage_name   = b.get("stage_name", ""),
-            real_name    = b.get("real_name"),
-            birthdate    = b.get("birthdate"),
-            nationality  = b.get("nationality", "South Korean"),
-            gender       = b.get("gender"),
-            active       = b.get("active", 1),
-            debut_year   = b.get("debut_year"),
-            notes        = b.get("notes"),
+            stage_name=b.get("stage_name", ""),
+            real_name=b.get("real_name"),
+            birthdate=b.get("birthdate"),
+            nationality=b.get("nationality", "South Korean"),
+            gender=b.get("gender"),
+            active=b.get("active", 1),
+            debut_year=b.get("debut_year"),
+            notes=b.get("notes"),
         )
         return ok(result, 201)
 
     @app.route("/api/v1/artists/<int:artist_id>", methods=["PUT"])
     @handle_biz
     def update_artist(artist_id):
-        """PUT /api/v1/artists/<id> — full update."""
         b = jbody()
         result = _artist_biz.update_artist(
-            artist_id   = artist_id,
-            stage_name  = b.get("stage_name", ""),
-            real_name   = b.get("real_name"),
-            birthdate   = b.get("birthdate"),
-            nationality = b.get("nationality", "South Korean"),
-            gender      = b.get("gender"),
-            active      = b.get("active", 1),
-            debut_year  = b.get("debut_year"),
-            notes       = b.get("notes"),
+            artist_id=artist_id,
+            stage_name=b.get("stage_name", ""),
+            real_name=b.get("real_name"),
+            birthdate=b.get("birthdate"),
+            nationality=b.get("nationality", "South Korean"),
+            gender=b.get("gender"),
+            active=b.get("active", 1),
+            debut_year=b.get("debut_year"),
+            notes=b.get("notes"),
         )
         return ok(result)
 
     @app.route("/api/v1/artists/<int:artist_id>/deactivate", methods=["PATCH"])
     @handle_biz
     def deactivate_artist(artist_id):
-        """PATCH /api/v1/artists/<id>/deactivate — soft delete."""
         return ok(_artist_biz.deactivate_artist(artist_id))
 
     @app.route("/api/v1/artists/<int:artist_id>", methods=["DELETE"])
     @handle_biz
     def delete_artist(artist_id):
-        """DELETE /api/v1/artists/<id> — hard delete."""
         _artist_biz.remove_artist(artist_id)
         return ok({"deleted": True, "artist_id": artist_id})
 
@@ -248,7 +238,6 @@ def create_app() -> Flask:
     @app.route("/api/v1/groups/<int:group_id>/members", methods=["GET"])
     @handle_biz
     def get_group_members(group_id):
-        """GET /api/v1/groups/<id>/members — list all artists in a group."""
         return ok(_group_biz.get_group_members(group_id))
 
     @app.route("/api/v1/groups", methods=["POST"])
@@ -256,13 +245,13 @@ def create_app() -> Flask:
     def create_group():
         b = jbody()
         result = _group_biz.add_group(
-            group_name  = b.get("group_name", ""),
-            agency      = b.get("agency"),
-            debut_date  = b.get("debut_date"),
-            fandom_name = b.get("fandom_name"),
-            active      = b.get("active", 1),
-            gender_type = b.get("gender_type"),
-            notes       = b.get("notes"),
+            group_name=b.get("group_name", ""),
+            agency=b.get("agency"),
+            debut_date=b.get("debut_date"),
+            fandom_name=b.get("fandom_name"),
+            active=b.get("active", 1),
+            gender_type=b.get("gender_type"),
+            notes=b.get("notes"),
         )
         return ok(result, 201)
 
@@ -271,14 +260,14 @@ def create_app() -> Flask:
     def update_group(group_id):
         b = jbody()
         result = _group_biz.update_group(
-            group_id    = group_id,
-            group_name  = b.get("group_name", ""),
-            agency      = b.get("agency"),
-            debut_date  = b.get("debut_date"),
-            fandom_name = b.get("fandom_name"),
-            active      = b.get("active", 1),
-            gender_type = b.get("gender_type"),
-            notes       = b.get("notes"),
+            group_id=group_id,
+            group_name=b.get("group_name", ""),
+            agency=b.get("agency"),
+            debut_date=b.get("debut_date"),
+            fandom_name=b.get("fandom_name"),
+            active=b.get("active", 1),
+            gender_type=b.get("gender_type"),
+            notes=b.get("notes"),
         )
         return ok(result)
 
@@ -310,16 +299,16 @@ def create_app() -> Flask:
     def create_album():
         b = jbody()
         result = _album_biz.add_album(
-            group_id     = b.get("group_id", 0),
-            title        = b.get("title", ""),
-            album_type   = b.get("album_type", ""),
-            release_date = b.get("release_date"),
-            version_name = b.get("version_name"),
-            track_count  = b.get("track_count"),
-            duration_mins= b.get("duration_mins"),
-            label        = b.get("label"),
-            is_limited   = b.get("is_limited", 0),
-            notes        = b.get("notes"),
+            group_id=b.get("group_id", 0),
+            title=b.get("title", ""),
+            album_type=b.get("album_type", ""),
+            release_date=b.get("release_date"),
+            version_name=b.get("version_name"),
+            track_count=b.get("track_count"),
+            duration_mins=b.get("duration_mins"),
+            label=b.get("label"),
+            is_limited=b.get("is_limited", 0),
+            notes=b.get("notes"),
         )
         return ok(result, 201)
 
@@ -328,17 +317,17 @@ def create_app() -> Flask:
     def update_album(album_id):
         b = jbody()
         result = _album_biz.update_album(
-            album_id     = album_id,
-            group_id     = b.get("group_id", 0),
-            title        = b.get("title", ""),
-            album_type   = b.get("album_type", ""),
-            release_date = b.get("release_date"),
-            version_name = b.get("version_name"),
-            track_count  = b.get("track_count"),
-            duration_mins= b.get("duration_mins"),
-            label        = b.get("label"),
-            is_limited   = b.get("is_limited", 0),
-            notes        = b.get("notes"),
+            album_id=album_id,
+            group_id=b.get("group_id", 0),
+            title=b.get("title", ""),
+            album_type=b.get("album_type", ""),
+            release_date=b.get("release_date"),
+            version_name=b.get("version_name"),
+            track_count=b.get("track_count"),
+            duration_mins=b.get("duration_mins"),
+            label=b.get("label"),
+            is_limited=b.get("is_limited", 0),
+            notes=b.get("notes"),
         )
         return ok(result)
 
@@ -360,7 +349,6 @@ def create_app() -> Flask:
     @app.route("/api/v1/collection/spent", methods=["GET"])
     @handle_biz
     def total_spent():
-        """GET /api/v1/collection/spent — total money spent on albums."""
         return ok({"total_spent": _item_biz.get_total_spent()})
 
     @app.route("/api/v1/collection/<int:item_id>", methods=["GET"])
@@ -373,16 +361,16 @@ def create_app() -> Flask:
     def create_collection_item():
         b = jbody()
         result = _item_biz.add_item(
-            album_id      = b.get("album_id", 0),
-            condition     = b.get("condition", "Mint"),
-            purchase_date = b.get("purchase_date"),
-            purchase_price= b.get("purchase_price"),
-            purchase_from = b.get("purchase_from"),
-            is_sealed     = b.get("is_sealed", 0),
-            has_poster    = b.get("has_poster", 0),
-            has_cd        = b.get("has_cd", 1),
-            inclusions    = b.get("inclusions"),
-            notes         = b.get("notes"),
+            album_id=b.get("album_id", 0),
+            condition=b.get("condition", "Mint"),
+            purchase_date=b.get("purchase_date"),
+            purchase_price=b.get("purchase_price"),
+            purchase_from=b.get("purchase_from"),
+            is_sealed=b.get("is_sealed", 0),
+            has_poster=b.get("has_poster", 0),
+            has_cd=b.get("has_cd", 1),
+            inclusions=b.get("inclusions"),
+            notes=b.get("notes"),
         )
         return ok(result, 201)
 
@@ -391,17 +379,17 @@ def create_app() -> Flask:
     def update_collection_item(item_id):
         b = jbody()
         result = _item_biz.update_item(
-            item_id       = item_id,
-            album_id      = b.get("album_id", 0),
-            condition     = b.get("condition", "Mint"),
-            purchase_date = b.get("purchase_date"),
-            purchase_price= b.get("purchase_price"),
-            purchase_from = b.get("purchase_from"),
-            is_sealed     = b.get("is_sealed", 0),
-            has_poster    = b.get("has_poster", 0),
-            has_cd        = b.get("has_cd", 1),
-            inclusions    = b.get("inclusions"),
-            notes         = b.get("notes"),
+            item_id=item_id,
+            album_id=b.get("album_id", 0),
+            condition=b.get("condition", "Mint"),
+            purchase_date=b.get("purchase_date"),
+            purchase_price=b.get("purchase_price"),
+            purchase_from=b.get("purchase_from"),
+            is_sealed=b.get("is_sealed", 0),
+            has_poster=b.get("has_poster", 0),
+            has_cd=b.get("has_cd", 1),
+            inclusions=b.get("inclusions"),
+            notes=b.get("notes"),
         )
         return ok(result)
 
@@ -429,7 +417,6 @@ def create_app() -> Flask:
     @app.route("/api/v1/photocards/value", methods=["GET"])
     @handle_biz
     def total_photocard_value():
-        """GET /api/v1/photocards/value — total estimated value of all cards."""
         return ok({"total_value": _pc_biz.get_total_value()})
 
     @app.route("/api/v1/photocards/<int:photocard_id>", methods=["GET"])
@@ -442,17 +429,17 @@ def create_app() -> Flask:
     def create_photocard():
         b = jbody()
         result = _pc_biz.add_photocard(
-            item_id         = b.get("item_id", 0),
-            artist_id       = b.get("artist_id", 0),
-            album_id        = b.get("album_id", 0),
-            card_type       = b.get("card_type", "Standard"),
-            condition       = b.get("condition", "Mint"),
-            acquired_date   = b.get("acquired_date"),
-            acquired_from   = b.get("acquired_from"),
-            estimated_value = b.get("estimated_value"),
-            is_duplicate    = b.get("is_duplicate", 0),
-            for_trade       = b.get("for_trade", 0),
-            notes           = b.get("notes"),
+            item_id=b.get("item_id", 0),
+            artist_id=b.get("artist_id", 0),
+            album_id=b.get("album_id", 0),
+            card_type=b.get("card_type", "Standard"),
+            condition=b.get("condition", "Mint"),
+            acquired_date=b.get("acquired_date"),
+            acquired_from=b.get("acquired_from"),
+            estimated_value=b.get("estimated_value"),
+            is_duplicate=b.get("is_duplicate", 0),
+            for_trade=b.get("for_trade", 0),
+            notes=b.get("notes"),
         )
         return ok(result, 201)
 
@@ -461,25 +448,24 @@ def create_app() -> Flask:
     def update_photocard(photocard_id):
         b = jbody()
         result = _pc_biz.update_photocard(
-            photocard_id    = photocard_id,
-            item_id         = b.get("item_id", 0),
-            artist_id       = b.get("artist_id", 0),
-            album_id        = b.get("album_id", 0),
-            card_type       = b.get("card_type", "Standard"),
-            condition       = b.get("condition", "Mint"),
-            acquired_date   = b.get("acquired_date"),
-            acquired_from   = b.get("acquired_from"),
-            estimated_value = b.get("estimated_value"),
-            is_duplicate    = b.get("is_duplicate", 0),
-            for_trade       = b.get("for_trade", 0),
-            notes           = b.get("notes"),
+            photocard_id=photocard_id,
+            item_id=b.get("item_id", 0),
+            artist_id=b.get("artist_id", 0),
+            album_id=b.get("album_id", 0),
+            card_type=b.get("card_type", "Standard"),
+            condition=b.get("condition", "Mint"),
+            acquired_date=b.get("acquired_date"),
+            acquired_from=b.get("acquired_from"),
+            estimated_value=b.get("estimated_value"),
+            is_duplicate=b.get("is_duplicate", 0),
+            for_trade=b.get("for_trade", 0),
+            notes=b.get("notes"),
         )
         return ok(result)
 
     @app.route("/api/v1/photocards/<int:photocard_id>/toggle-trade", methods=["PATCH"])
     @handle_biz
     def toggle_trade(photocard_id):
-        """PATCH /api/v1/photocards/<id>/toggle-trade — flip the for_trade flag."""
         return ok(_pc_biz.toggle_trade_flag(photocard_id))
 
     @app.route("/api/v1/photocards/<int:photocard_id>", methods=["DELETE"])
@@ -510,13 +496,13 @@ def create_app() -> Flask:
     def create_wish():
         b = jbody()
         result = _wish_biz.add_wish(
-            item_type   = b.get("item_type", ""),
-            description = b.get("description", ""),
-            album_id    = b.get("album_id"),
-            artist_id   = b.get("artist_id"),
-            max_budget  = b.get("max_budget"),
-            priority    = b.get("priority", 3),
-            notes       = b.get("notes"),
+            item_type=b.get("item_type", ""),
+            description=b.get("description", ""),
+            album_id=b.get("album_id"),
+            artist_id=b.get("artist_id"),
+            max_budget=b.get("max_budget"),
+            priority=b.get("priority", 3),
+            notes=b.get("notes"),
         )
         return ok(result, 201)
 
@@ -525,22 +511,21 @@ def create_app() -> Flask:
     def update_wish(wish_id):
         b = jbody()
         result = _wish_biz.update_wish(
-            wish_id     = wish_id,
-            item_type   = b.get("item_type", ""),
-            description = b.get("description", ""),
-            album_id    = b.get("album_id"),
-            artist_id   = b.get("artist_id"),
-            max_budget  = b.get("max_budget"),
-            priority    = b.get("priority", 3),
-            acquired    = b.get("acquired", 0),
-            notes       = b.get("notes"),
+            wish_id=wish_id,
+            item_type=b.get("item_type", ""),
+            description=b.get("description", ""),
+            album_id=b.get("album_id"),
+            artist_id=b.get("artist_id"),
+            max_budget=b.get("max_budget"),
+            priority=b.get("priority", 3),
+            acquired=b.get("acquired", 0),
+            notes=b.get("notes"),
         )
         return ok(result)
 
     @app.route("/api/v1/wishlist/<int:wish_id>/acquire", methods=["PATCH"])
     @handle_biz
     def acquire_wish(wish_id):
-        """PATCH /api/v1/wishlist/<id>/acquire — mark as obtained."""
         return ok(_wish_biz.mark_acquired(wish_id))
 
     @app.route("/api/v1/wishlist/<int:wish_id>", methods=["DELETE"])
@@ -556,7 +541,6 @@ def create_app() -> Flask:
     @app.route("/api/v1/reports/summary", methods=["GET"])
     @handle_biz
     def report_summary():
-        """GET /api/v1/reports/summary — collection overview with derived stats."""
         return ok(_report_biz.collection_summary())
 
     @app.route("/api/v1/reports/photocards-per-artist", methods=["GET"])
@@ -577,34 +561,18 @@ def create_app() -> Flask:
     # ── Serve the web frontend ─────────────────────────────────────────────────
     @app.route("/")
     def index():
-        """Serve the single-page web frontend (frontend/index.html)."""
         from flask import send_from_directory
         return send_from_directory(_FRONTEND, "index.html")
 
     @app.route("/app")
     def frontend_app():
-        """Alias for the frontend — useful when sharing link."""
         from flask import send_from_directory
         return send_from_directory(_FRONTEND, "index.html")
-
-    # ── CORS — allow browser requests from same origin or localhost dev ────────
-    @app.after_request
-    def add_cors(response):
-        response.headers["Access-Control-Allow-Origin"]  = "*"
-        response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
-        return response
-
-    @app.route("/api/v1/<path:p>", methods=["OPTIONS"])
-    def api_options_handler(p):
-        """Handle CORS preflight requests."""
-        return "", 204
 
     logger.info("K-Pop Collection API initialized. DB: %s", _db_path)
     return app
 
 
-# ── entry point ───────────────────────────────────────────────────────────────
 app = create_app()
 
 if __name__ == "__main__":
